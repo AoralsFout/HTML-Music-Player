@@ -1,6 +1,10 @@
 # HTML-Music-Player
  A html music player
 
+ html+css+javascript+php+sql
+
+ demo:https://www.aoralsfout.cn/music
+
 ###数据库结构👇
 
 ```sql
