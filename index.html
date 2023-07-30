@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="index.css">
+    <title>Aoralsfoutの音乐播放器</title>
+</head>
+
+<body>
+    <div class="musicPlayer">
+        <audio id="control">
+            <source src="" type="audio/mpeg" id="audio">
+            您的浏览器不支持 audio 元素。
+        </audio>
+        <div id="box" class="box">
+            <div class="up">
+                <div id="cover"></div>
+                <div class="info">
+                    <div id="title"></div>
+                    <div id="author"></div>
+                    <div id="album"></div>
+                </div>
+            </div>
+            <div class="down">
+                <div id="bars"><i class="fa-solid fa-bars icon"></i></div>
+                <div id="control-bar">
+                    <div id="play"><i class="fa-solid fa-play icon"></i></div>
+                    <div id="pause"><i class="fa-solid fa-pause icon"></i></div>
+                </div>
+                <div id="progress-bar" class="progress-bar">
+                    <div id="textProgress">00:00/00:00</div>
+                    <div>
+                        <div id="dot"></div>
+                        <div id="progress"></div>
+                        <div id="progress-bg"></div>
+                        <div id="progress-blur"></div>
+                    </div>
+                </div>
+                <div id="lrcBox" class="lrcBox"></div>
+            </div>
+        </div>
+        <div id="list" class="list">
+            <div class="list-bg">
+                <div class="list-ol" id="list-ol">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
