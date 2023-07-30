@@ -1,6 +1,8 @@
 # HTML-Music-Player
  A html music player
 
+<img src="sc-1.png" width="280">
+
  html+css+javascript+php+sql
 
  demo:https://www.aoralsfout.cn/music
