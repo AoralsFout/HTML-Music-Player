@@ -1,5 +1,9 @@
 <?php
-require_once '../databaseConnectConfig.php';
+//填写你的数据库信息
+$dbHost = "";
+$dbUser = "";
+$dbPass = "";
+$dbName = "";
 
 // 创建数据库连接
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
