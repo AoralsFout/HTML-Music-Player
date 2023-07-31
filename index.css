@@ -1,5 +1,12 @@
 .musicPlayer {
-  width: 350px;
+  position: fixed;
+  right: 0px;
+  bottom: 20px;
+  display: flex;
+  width: 380px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  transition: right 0.5s cubic-bezier(0.5, 0, 0, 1);
 }
 
 .box {
@@ -8,65 +15,88 @@
   height: 200px;
   width: 350px;
   flex-wrap: nowrap;
-  border-radius: 5px;
-  box-shadow: 1px 1px 10px 0px #666;
+  box-shadow: 3px 3px 10px 0px #666;
   flex-direction: column;
   background-size: 150%;
   background-position: center center;
   z-index: 2;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.showBox {
+  display: flex;
+  margin-top: 20px !important;
+  margin: 0;
+  width: 30px;
+  height: 60px;
+  background-size: cover;
+  background-position: center center;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  box-shadow: 1px 1px 10px 0px #666;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+}
+
+#showBoxIcon {
+  transition: transform 0.5s;
 }
 
 .list {
   overflow-x: hidden;
   overflow-y: auto;
+  margin-left: 30px;
   margin-top: -5px;
   border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
   box-shadow: 1px 1px 10px 0px #666;
   height: 0px;
+  width: 350px;
   display: flex;
   position: relative;
   z-index: 0;
   background-size: 150%;
   background-position: center center;
-  transition: height 0.5s ease-in-out;
+  opacity: 0.8;
+  transition: height 0.5s cubic-bezier(0.5, 0, 0, 1);
 }
 
 .list-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 350px;
   margin: 0;
   padding: 0;
   backdrop-filter: blur(100px);
   -webkit-backdrop-filter: blur(100px);
   border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
 }
 
 .list-ol {
+  position: absolute;
   margin-top: 5px;
 }
 
 .list-item {
+  font-size: 14px;
   padding: 5px;
   border-bottom: 1px solid white;
   transition: all 0.5s;
   white-space: nowrap;
+  color: var(--iconColor);
 }
 
 .playing-item {
-  background-color: rgba(0, 190, 255, 0.5);
-  color: #fff;
+  background-color: var(--iconHoverColor);
+  color: var(--iconColor);
 }
 
 .list-item:hover {
-  background-color: rgba(0, 190, 255, 0.5);
-  color: #fff;
+  background-color: var(--iconHoverColor);
+  color: var(--iconColor);
 }
 
 .list::-webkit-scrollbar {
-  border-bottom-right-radius: 5px;
   padding: 1px;
   width: 10px;
   background-color: #ccc;
@@ -79,6 +109,7 @@
 }
 
 #cover {
+  border: 2px solid #fff;
   margin-top: 10px !important;
   margin-bottom: 10px !important;
   margin: 0 auto;
@@ -97,6 +128,7 @@
   justify-content: center;
   margin: 5px;
   margin-bottom: 0px !important;
+  z-index: 1;
 }
 
 #bars {
@@ -107,6 +139,7 @@
   height: 25px;
   align-content: center;
   justify-content: center;
+  z-index: 2;
 }
 
 #play {
@@ -125,10 +158,77 @@
   justify-content: center;
 }
 
+#backward-step {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  align-content: center;
+  justify-content: center;
+}
+
+#forward-step {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  align-content: center;
+  justify-content: center;
+}
+
+#changeEndedModeIcon {
+  position: absolute;
+  margin-left: 320px !important;
+  margin: 5px;
+  z-index: 2;
+}
+
+#repeat {
+  display: none;
+  width: 25px;
+  height: 25px;
+  align-content: center;
+  justify-content: center;
+}
+
+#repeat-1 {
+  display: none;
+  width: 25px;
+  height: 25px;
+  align-content: center;
+  justify-content: center;
+}
+
+.repeat-1 {
+  font-size: 10px !important;
+  margin-left: -13px;
+  margin-top:4px;
+}
+
+#shuffle {
+  display: none;
+  width: 25px;
+  height: 25px;
+  align-content: center;
+  justify-content: center;
+}
+
 .icon {
   display: flex;
   font-size: 20px;
   flex-wrap: wrap;
+  color: var(--iconColor) !important;
+}
+
+.fa-solid {
+  transition: color 0.2s;
+}
+
+.fa-solid:hover {
+  color: var(--iconHoverColor) !important;
+}
+
+.identification-area {
+  position: relative;
+  height: 20px;
 }
 
 @property --progress {
@@ -137,17 +237,39 @@
   initial-value: 0%;
 }
 
-.lrcBox{
+@property --iconColor {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #000;
+}
+
+@property --iconHoverColor {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #fff;
+}
+
+.lrcBox {
+  width: 350px;
+  margin-top: -20px;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
+  user-select: none;
+  font-size: 18px;
+  font-weight: bold;
   overflow: hidden;
   white-space: nowrap;
   display: flex;
   height: 29px;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 }
 
 #textProgress {
   font-size: 10px;
+  z-index: 2;
 }
 
 .progress-bar {
@@ -157,6 +279,11 @@
   margin: 5px;
   flex-direction: column;
   flex-wrap: wrap;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 4;
 }
 
 #progress-bg {
@@ -191,6 +318,7 @@
   display: none;
   flex-wrap: wrap;
   position: absolute;
+  margin-left: -4px !important;
   margin: -2px;
   left: var(--progress);
   border-radius: 50%;
@@ -214,25 +342,25 @@
   text-shadow: 1px 1px 2px #666;
   overflow: hidden;
   white-space: nowrap;
+  font-size: 10px;
 }
 
 .up {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
   height: 120px;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   justify-content: flex-start;
+  opacity: 0.95;
 }
 
 .down {
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
   border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
   height: 130px;
   display: flex;
   flex-direction: column;
@@ -255,4 +383,12 @@
   100% {
     transform: translateX(0);
   }
+}
+
+#visualizer {
+  background-color: transparent;
+  position: absolute;
+  z-index: 0;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
