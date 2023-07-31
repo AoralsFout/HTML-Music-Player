@@ -10,11 +10,23 @@
 </head>
 
 <body>
-    <div class="musicPlayer">
+    <div id="musicPlayer" class="musicPlayer">
+        <!--
+██████╗ ██╗      █████╗ ██╗   ██╗    ███╗   ███╗██╗   ██╗███████╗██╗ ██████╗██╗
+██╔══██╗██║     ██╔══██╗╚██╗ ██╔╝    ████╗ ████║██║   ██║██╔════╝██║██╔════╝██║
+██████╔╝██║     ███████║ ╚████╔╝     ██╔████╔██║██║   ██║███████╗██║██║     ██║
+██╔═══╝ ██║     ██╔══██║  ╚██╔╝      ██║╚██╔╝██║██║   ██║╚════██║██║██║     ╚═╝
+██║     ███████╗██║  ██║   ██║       ██║ ╚═╝ ██║╚██████╔╝███████║██║╚██████╗██╗
+╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝ ╚═════╝╚═╝ 
+↑creat by http://patorjk.com/software/taag/#p=display&h=1&f=ANSI%20Shadow&t=PLAY%20MUSIC!                                                                  
+        -->
         <audio id="control">
             <source src="" type="audio/mpeg" id="audio">
             您的浏览器不支持 audio 元素。
         </audio>
+        <div id="showBox" class="showBox">
+            <i class="fa-solid fa-angles-right" id="showBoxIcon"></i>
+        </div>
         <div id="box" class="box">
             <div class="up">
                 <div id="cover"></div>
@@ -25,27 +37,38 @@
                 </div>
             </div>
             <div class="down">
+                <canvas id="visualizer" width="350" height="80"></canvas>
                 <div id="bars"><i class="fa-solid fa-bars icon"></i></div>
                 <div id="control-bar">
+                    <div id="backward-step"><i class="fa-solid fa-backward-step icon "></i></div>
                     <div id="play"><i class="fa-solid fa-play icon"></i></div>
                     <div id="pause"><i class="fa-solid fa-pause icon"></i></div>
+                    <div id="forward-step"><i class="fa-solid fa-forward-step icon"></i></div>
+                </div>
+                <div id="changeEndedModeIcon">
+                    <div id="repeat"><i class="fa-solid fa-repeat icon"></i></div>
+                    <div id="shuffle"><i class="fa-solid fa-shuffle icon"></i></div>
+                    <div id="repeat-1" class="fa-stack fa-lg">
+                        <i class="fa-solid fa-repeat icon">
+                            <div class="repeat-1">1</div>
+                        </i>
+                    </div>
                 </div>
                 <div id="progress-bar" class="progress-bar">
-                    <div id="textProgress">00:00/00:00</div>
-                    <div>
+                    <div id="textProgress" draggable="false">00:00/00:00</div>
+                    <div class="identification-area">
                         <div id="dot"></div>
                         <div id="progress"></div>
                         <div id="progress-bg"></div>
                         <div id="progress-blur"></div>
                     </div>
                 </div>
-                <div id="lrcBox" class="lrcBox"></div>
+                <div id="lrcBox" class="lrcBox" draggable="false"></div>
             </div>
         </div>
         <div id="list" class="list">
-            <div class="list-bg">
-                <div class="list-ol" id="list-ol">
-                </div>
+            <div class="list-ol">
+                <div class="list-bg" id="list-ol"></div>
             </div>
         </div>
     </div>
