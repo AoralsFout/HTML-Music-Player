@@ -1,6 +1,8 @@
 var nowPlayingMusicId = 0;//记录当前正在播放的音乐id
 var data;//所有音乐信息
 
+const audio = document.getElementById('control');
+
 function getMusicInfo() {//获取所有音乐信息
     const request = new XMLHttpRequest();
     request.open("GET", "getMusicInfo.php");
@@ -19,6 +21,8 @@ function getMusicInfo() {//获取所有音乐信息
             list.innerHTML = listRes;
             //加载音乐
             loadMusicInfo(nowPlayingMusicId);
+            //加载频谱
+            draw();
         }
     }
     request.send(null);
@@ -27,32 +31,67 @@ function getMusicInfo() {//获取所有音乐信息
 getMusicInfo();
 
 //控制音乐播放暂停按钮切换
-document.getElementById("control").addEventListener("playing", function () {
+audio.addEventListener("playing", function () {
     document.getElementById("play").style.display = 'none';
     document.getElementById("pause").style.display = 'flex';
 })
 
-document.getElementById("control").addEventListener("pause", function () {
+audio.addEventListener("pause", function () {
     document.getElementById("play").style.display = 'flex';
     document.getElementById("pause").style.display = 'none';
 })
 //按钮功能
 document.getElementById("play").addEventListener("click", function () {
-    document.getElementById("control").play();
+    audio.play();
 })
 document.getElementById("pause").addEventListener("click", function () {
-    document.getElementById("control").pause();
+    audio.pause();
 })
-//播完自动下一首
-// document.getElementById("control").addEventListener("waiting", loadMusicInfo(nowPlayingMusicId + 1));
+document.getElementById("backward-step").addEventListener("click", function () {
+    loadMusicInfo(nowPlayingMusicId - 1);
+})
+document.getElementById("forward-step").addEventListener("click", function () {
+    changeMusic();
+})
 
 //加载音乐
 function loadMusicInfo(id) {
+    if (id === -1) {
+        id = data.length - 1 //指定id -1 为最后一首歌
+    } else {
+        id = Math.abs(id) % data.length //防止id为负数和限制id不超出总歌曲数量
+    }
     nowPlayingMusicId = id;//更新音乐id
-    getMainColor(data[id].cover, function (mainColor) {//获取音乐封面主色调
+
+    const address = "music/" + id + ".mp3";
+    const cover = "cover/" + id + ".jpg";
+
+    getMainColor(cover, function (mainColor) {//获取音乐封面主色调
+        const str = mainColor;
+        const regex = /[^,]+/g;
+        const result = str.match(regex);
+        const [r, g, b] = result;
+
+        fr = 255 - r;
+        fg = 255 - g;
+        fb = 255 - b;
+
+        const fMainColor = fr + "," + fg + "," + fb;
+
         document.getElementById("cover").style.boxShadow = "0px 0px 20px 0px rgba(" + mainColor + " ,0.5)"
-        document.getElementById("progress").style.backgroundColor = "rgb(" + mainColor + ")";
-        document.getElementById("dot").style.backgroundColor = "rgb(" + mainColor + ")";
+        document.getElementById("progress").style.backgroundColor = "rgb(" + fMainColor + ")";
+        document.getElementById("dot").style.backgroundColor = "rgb(" + fMainColor + ")";
+        document.getElementById("lrcBox").style.color = "rgb(" + mainColor + ")";
+        document.getElementById("lrcBox").style.textShadow = "0px 0px 5px rgb(" + fMainColor + ")";
+        document.getElementById("showBox").style.backgroundColor = "rgba(" + mainColor + ",0.8)";
+        for (let i = 0; i < document.getElementsByTagName("i").length; i++) {
+            document.getElementsByTagName("i")[i].style.setProperty("--iconHoverColor", "rgb(" + mainColor + ")");
+            document.getElementsByTagName("i")[i].style.setProperty("--iconColor", "rgb(" + fMainColor + ")");
+        }
+        for (let i = 0; i < document.getElementsByClassName("list-item").length; i++) {
+            document.getElementsByClassName("list-item")[i].style.setProperty("--iconHoverColor", "rgba(" + mainColor + ",0.5)");
+            document.getElementsByClassName("list-item")[i].style.setProperty("--iconColor", "rgb(" + fMainColor + ")");
+        }
     });
     //清空音乐信息滚动状态
     document.getElementById("title").setAttribute("class", "");
@@ -64,20 +103,20 @@ function loadMusicInfo(id) {
     }
     //加载信息
     document.getElementById("music" + id).setAttribute("class", "list-item playing-item");
-    document.getElementById("box").style.backgroundImage = "url(" + data[id].cover + ")";
-    document.getElementById("list").style.backgroundImage = "url(" + data[id].cover + ")";
+    document.getElementById("box").style.backgroundImage = "url(" + cover + ")";
+    document.getElementById("list").style.backgroundImage = "url(" + cover + ")";
     document.getElementById("title").innerHTML = data[id].title;
-    document.getElementById("cover").style.backgroundImage = "url(" + data[id].cover + ")";
+    document.getElementById("cover").style.backgroundImage = "url(" + cover + ")";
     document.getElementById("author").innerHTML = data[id].author;
     if (data[id].album == null) {
         document.getElementById("album").innerHTML = "暂无专辑"
     } else {
         document.getElementById("album").innerHTML = data[id].album;
     }
-    document.getElementById("audio").src = data[id].address;
+    document.getElementById("audio").src = address;
     //播放音乐
-    document.getElementById("control").load()
-    document.getElementById("control").play()
+    audio.load()
+    audio.play()
     //添加音乐信息滚动状态
     if (document.getElementById("title").clientWidth > 150) {
         document.getElementById("title").setAttribute("class", "scrolling-text")
@@ -93,6 +132,9 @@ function loadMusicInfo(id) {
     }
     //加载歌词
     getLrc(nowPlayingMusicId);
+    //立刻更新进度条
+    showTextProgress();
+    changeProgress();
 }
 
 //更新进度条
@@ -100,10 +142,11 @@ setInterval(() => {
     showTextProgress();
     changeProgress();
 }, 1000);
+
 //显示文本进度
 function showTextProgress() {
-    const totalSeconds = Math.floor(document.getElementById("control").duration);
-    const seconds = Math.floor(document.getElementById("control").currentTime);
+    const totalSeconds = Math.floor(audio.duration);
+    const seconds = Math.floor(audio.currentTime);
     const totalProgress = s_To_mmss(totalSeconds);
     const progress = s_To_mmss(seconds);
     const result = progress + "/" + totalProgress;
@@ -111,8 +154,8 @@ function showTextProgress() {
 }
 //显示进度条进度
 function getProgressPercentage() {
-    const totalSeconds = document.getElementById("control").duration;
-    const seconds = document.getElementById("control").currentTime;
+    const totalSeconds = audio.duration;
+    const seconds = audio.currentTime;
     const res = ((seconds / totalSeconds) * 100) + "%"
     return res
 }
@@ -138,8 +181,8 @@ function addZero(a) {
 }
 
 //封面旋转
-document.getElementById("control").addEventListener("playing", startRotateCover);
-document.getElementById("control").addEventListener("pause", stopRotateCover);
+audio.addEventListener("playing", startRotateCover);
+audio.addEventListener("pause", stopRotateCover);
 let isRotating = false; // 用于判断盒子是否正在旋转
 let rotationAngle = 0; // 用于存储当前旋转角度
 
@@ -175,22 +218,75 @@ document.getElementById("progress-bar").addEventListener("mouseout", function ()
     document.getElementById("dot").style.display = "none";
 })
 
-//点击进度条跳转
-document.getElementById("progress-bar").addEventListener("click", function (e) {
-    const clickX = e.clientX;
-    const offX = this.offsetLeft;
-    const x = clickX - offX;
-    if (x < 0) {//防止出现负数
-        x = 0
+//进度条行为
+const progressBar = document.getElementById('progress-bar');
+const progress = document.getElementById('progress');
+const dot = document.getElementById('dot');
+
+let isMouseDown = false;
+let audioDuration = isNaN(audio.duration) ? 0 : audio.duration;
+let currentPercentage = 0;
+
+// 鼠标按下
+function handleMouseDown(e) {
+    isMouseDown = true;
+    updateProgressAndAudio(e);
+}
+
+// 鼠标松开
+function handleMouseUp(e) {
+    isMouseDown = false;
+    updateProgressAndAudio(e);
+}
+
+// 鼠标移动
+function handleMouseMove(e) {
+    if (isMouseDown) {
+        updateProgressAndAudio(e);
     }
-    const width = this.offsetWidth;
-    const percentage = x / width;
-    const totalSeconds = document.getElementById("control").duration;
-    const seconds = totalSeconds * percentage;
-    document.getElementById("control").currentTime = seconds;
-    showTextProgress();
-    changeProgress();
-})
+}
+
+function updateProgressAndAudio(e) {
+    const progressBarRect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+
+    if (
+        clickX >= progressBarRect.left &&
+        clickX <= progressBarRect.right &&
+        clickY >= progressBarRect.top &&
+        clickY <= progressBarRect.bottom
+    ) {
+        const percentage = (clickX - progressBarRect.left) / progressBarRect.width;
+
+        const validPercentage = Math.max(0, Math.min(1, percentage));
+
+        progress.style.width = `${validPercentage * 100}%`;
+        dot.style.left = `${validPercentage * 100}%`;
+
+        if (!isMouseDown) { //md不知道为啥这个判断里的代码放下面的判断不起作用
+            progress.style.removeProperty("width");
+            dot.style.removeProperty("left");
+            showTextProgress();
+            changeProgress();
+        }
+
+        if (!isMouseDown && audio.readyState >= 4) {
+            const audioCurrentTime = audioDuration * validPercentage;
+            audio.currentTime = audioCurrentTime;
+        }
+    }
+}
+
+progressBar.addEventListener('mousedown', handleMouseDown);
+progressBar.addEventListener('mouseup', handleMouseUp);
+progressBar.addEventListener('mousemove', handleMouseMove);
+document.addEventListener('mouseup', handleMouseUp);
+
+audio.addEventListener('loadedmetadata', function () {
+    audioDuration = isNaN(audio.duration) ? 0 : audio.duration;
+});
+
 //获取图片主色调
 function getMainColor(imgUrl, callback) {
     var img = new Image();
@@ -248,6 +344,23 @@ function toggleList() {
     }
 }
 
+//展开&收起播放器
+var isPlayerShow = false
+
+document.getElementById("showBox").addEventListener("click", togglePlayer)
+
+function togglePlayer() {
+    if (isPlayerShow) {
+        isPlayerShow = !isPlayerShow
+        document.getElementById("musicPlayer").style.right = "-350px";
+        document.getElementById("showBoxIcon").style.transform = "rotate(180deg)"
+    } else {
+        isPlayerShow = !isPlayerShow
+        document.getElementById("musicPlayer").style.right = "0px";
+        document.getElementById("showBoxIcon").style.transform = "rotate(0deg)"
+    }
+}
+
 //歌词
 
 //获取歌词文件
@@ -265,7 +378,6 @@ function getLrc(id) {
     request.send();
 }
 
-const audio = document.getElementById('control');
 const lyricsBox = document.getElementById('lrcBox');
 let lyricsData = []; // 存储歌词数据的数组
 
@@ -305,3 +417,110 @@ audio.addEventListener('timeupdate', function () {
     lyricsBox.innerHTML = currentLyrics;
 });
 
+//音频频谱
+
+const canvas = document.getElementById('visualizer');
+
+const audioContext = new (window.AudioContext || window.AudioContext)();
+const analyser = audioContext.createAnalyser();
+
+const source = audioContext.createMediaElementSource(audio);
+source.connect(analyser);
+analyser.connect(audioContext.destination);
+
+analyser.fftSize = 128;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+const canvasCtx = canvas.getContext('2d');
+
+function draw() {
+    getMainColor("cover/" + nowPlayingMusicId + ".jpg", function (mainColor) {//获取音乐封面主色调
+        const str = mainColor;
+        const regex = /[^,]+/g;
+        const result = str.match(regex);
+        const [r, g, b] = result;
+
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const barHeight = dataArray[i];
+
+            canvasCtx.fillStyle = `rgb(${255 - r},${255 - g},${255 - b},${(barHeight / 255) * 100}%)`;
+            canvasCtx.fillRect(x, canvas.height - barHeight / 12, barWidth, barHeight / 12);
+
+            x += barWidth + 1;
+        }
+
+        requestAnimationFrame(draw);
+    });
+}
+
+function getRandomMusicId(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    let id = Math.floor(Math.random() * (max - min + 1)) + min;
+    if (id === nowPlayingMusicId) {
+        id = getRandomMusicId(min, max);//如果随机到同一首歌再随机一次;
+    }
+    return id;
+}
+
+let endedMode = "loop" //播放模式 next顺序播放 random随机播放 loop单曲循环
+
+//播完自动下一首
+
+function changeMusic() {
+    switch (endedMode) {
+        case "next":
+            loadMusicInfo(nowPlayingMusicId + 1);
+            break;
+        case "random":
+            loadMusicInfo(getRandomMusicId(0, data.length - 1));
+            break;
+        case "loop":
+            audio.currentTime = 0;
+            audio.play();
+            changeProgress();
+            showTextProgress();
+            break;
+        default:
+            break;
+    }
+}
+
+audio.addEventListener("ended", changeMusic);
+
+toggleChangeEndedMode()
+
+document.getElementById("changeEndedModeIcon").addEventListener("click", toggleChangeEndedMode);
+
+function toggleChangeEndedMode() {
+    const repeat = document.getElementById("repeat");
+    const repeat_1 = document.getElementById("repeat-1");
+    const shuffle = document.getElementById("shuffle");
+    switch (endedMode) {
+        case "next":
+            endedMode = "random"
+            repeat.style.display = "none";
+            shuffle.style.display = "flex"
+            break;
+        case "random":
+            endedMode = "loop"
+            shuffle.style.display = "none"
+            repeat_1.style.display = "flex";
+            break
+        case "loop":
+            endedMode = "next"
+            repeat_1.style.display = "none";
+            repeat.style.display = "flex";
+            break
+        default:
+            break;
+    }
+}
