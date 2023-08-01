@@ -7,7 +7,7 @@
 
  demo:https://www.aoralsfout.cn/music
 
-### 数据库结构👇
+### 数据库👇
 
 ```sql
 CREATE TABLE `musics` (
@@ -22,3 +22,19 @@ INSERT INTO `musics` (`id`, `title`, `address`, `cover`, `lrc`, `album`, `author
 	(0, '2009-2020动漫单曲', NULL, '暮肆_Mousse')
 
 ```
+
+### 功能
+
+播放时旋转封面
+
+上一首/下一首切换
+
+音量控制
+
+时长控制
+
+播放模式 : 单曲循环 顺序播放 随机播放
+
+音频频谱特效
+
+处理lrc歌词文件
