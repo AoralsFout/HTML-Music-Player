@@ -38,3 +38,5 @@ INSERT INTO `musics` (`id`, `title`, `address`, `cover`, `lrc`, `album`, `author
 音频频谱特效
 
 处理lrc歌词文件
+
+主体侧边隐藏/展开
