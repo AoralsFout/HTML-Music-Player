@@ -16,7 +16,7 @@ function getMusicInfo() {//获取所有音乐信息
             for (let i = 0; i < data.length; i++) {
                 listRes += `
                 <div class="list-item" id="music${data[i].id}" onclick ="loadMusicInfo(${data[i].id})">${data[i].title}\n-${data[i].author}</div>
-                `
+                `;
             }
             list.innerHTML = listRes;
             //加载音乐
@@ -24,7 +24,7 @@ function getMusicInfo() {//获取所有音乐信息
             //加载频谱
             draw();
         }
-    }
+    };
     request.send(null);
 }
 
@@ -34,33 +34,36 @@ getMusicInfo();
 audio.addEventListener("playing", function () {
     document.getElementById("play").style.display = 'none';
     document.getElementById("pause").style.display = 'flex';
-})
+});
 
 audio.addEventListener("pause", function () {
     document.getElementById("play").style.display = 'flex';
     document.getElementById("pause").style.display = 'none';
-})
+});
 //按钮功能
 document.getElementById("play").addEventListener("click", function () {
     audio.play();
-})
+});
 document.getElementById("pause").addEventListener("click", function () {
     audio.pause();
-})
+});
 document.getElementById("backward-step").addEventListener("click", function () {
     loadMusicInfo(nowPlayingMusicId - 1);
-})
+});
 document.getElementById("forward-step").addEventListener("click", function () {
     changeMusic();
-})
+});
 
 //加载音乐
 function loadMusicInfo(id) {
     if (id === -1) {
-        id = data.length - 1 //指定id -1 为最后一首歌
+        id = data.length - 1; //指定id -1 为最后一首歌
     } else {
-        id = Math.abs(id) % data.length //防止id为负数和限制id不超出总歌曲数量
+        id = Math.abs(id) % data.length; //防止id为负数和限制id不超出总歌曲数量
     }
+
+    audio.pause();
+
     nowPlayingMusicId = id;//更新音乐id
 
     const address = "music/" + id + ".mp3";
@@ -78,7 +81,7 @@ function loadMusicInfo(id) {
 
         const fMainColor = fr + "," + fg + "," + fb;
 
-        document.getElementById("cover").style.boxShadow = "0px 0px 20px 0px rgba(" + mainColor + " ,0.5)"
+        document.getElementById("cover").style.boxShadow = "0px 0px 20px 0px rgba(" + mainColor + " ,0.5)";
         document.getElementById("progress").style.backgroundColor = "rgb(" + fMainColor + ")";
         document.getElementById("dot").style.backgroundColor = "rgb(" + fMainColor + ")";
         document.getElementById("lrcBox").style.color = "rgb(" + mainColor + ")";
@@ -87,11 +90,14 @@ function loadMusicInfo(id) {
         for (let i = 0; i < document.getElementsByTagName("i").length; i++) {
             document.getElementsByTagName("i")[i].style.setProperty("--iconHoverColor", "rgb(" + mainColor + ")");
             document.getElementsByTagName("i")[i].style.setProperty("--iconColor", "rgb(" + fMainColor + ")");
+            document.getElementsByTagName("i")[i].style.textShadow = "0px 0px 10px rgba(" + mainColor + " ,0.5)";
         }
         for (let i = 0; i < document.getElementsByClassName("list-item").length; i++) {
             document.getElementsByClassName("list-item")[i].style.setProperty("--iconHoverColor", "rgba(" + mainColor + ",0.5)");
             document.getElementsByClassName("list-item")[i].style.setProperty("--iconColor", "rgb(" + fMainColor + ")");
         }
+        document.getElementById("volume-progress").style.backgroundColor = "rgb(" + fMainColor + ")";
+        document.getElementById("volume-dot").style.backgroundColor = "rgb(" + fMainColor + ")";
     });
     //清空音乐信息滚动状态
     document.getElementById("title").setAttribute("class", "");
@@ -109,26 +115,26 @@ function loadMusicInfo(id) {
     document.getElementById("cover").style.backgroundImage = "url(" + cover + ")";
     document.getElementById("author").innerHTML = data[id].author;
     if (data[id].album == null) {
-        document.getElementById("album").innerHTML = "暂无专辑"
+        document.getElementById("album").innerHTML = "暂无专辑";
     } else {
         document.getElementById("album").innerHTML = data[id].album;
     }
     document.getElementById("audio").src = address;
     //播放音乐
-    audio.load()
-    audio.play()
+    audio.load();
+    audio.play();
     //添加音乐信息滚动状态
     if (document.getElementById("title").clientWidth > 150) {
-        document.getElementById("title").setAttribute("class", "scrolling-text")
-        document.getElementById("title").innerHTML = data[id].title + "\n\n" + data[id].title
+        document.getElementById("title").setAttribute("class", "scrolling-text");
+        document.getElementById("title").innerHTML = data[id].title + "\n\n" + data[id].title;
     }
     if (document.getElementById("album").clientWidth > 150) {
-        document.getElementById("album").setAttribute("class", "scrolling-text")
-        document.getElementById("album").innerHTML = data[id].album + "\n\n" + data[id].album
+        document.getElementById("album").setAttribute("class", "scrolling-text");
+        document.getElementById("album").innerHTML = data[id].album + "\n\n" + data[id].album;
     }
     if (document.getElementById("author").clientWidth > 150) {
-        document.getElementById("author").setAttribute("class", "scrolling-text")
-        document.getElementById("author").innerHTML = data[id].author + "\n\n" + data[id].author
+        document.getElementById("author").setAttribute("class", "scrolling-text");
+        document.getElementById("author").innerHTML = data[id].author + "\n\n" + data[id].author;
     }
     //加载歌词
     getLrc(nowPlayingMusicId);
@@ -156,8 +162,8 @@ function showTextProgress() {
 function getProgressPercentage() {
     const totalSeconds = audio.duration;
     const seconds = audio.currentTime;
-    const res = ((seconds / totalSeconds) * 100) + "%"
-    return res
+    const res = ((seconds / totalSeconds) * 100) + "%";
+    return res;
 }
 //更改进度
 function changeProgress() {
@@ -417,6 +423,10 @@ audio.addEventListener('timeupdate', function () {
     lyricsBox.innerHTML = currentLyrics;
 });
 
+audio.addEventListener('loadstart', () => {
+    lyricsBox.innerHTML = "歌曲加载中,请稍候..."
+})
+
 //音频频谱
 
 const canvas = document.getElementById('visualizer');
@@ -498,7 +508,9 @@ audio.addEventListener("ended", changeMusic);
 
 toggleChangeEndedMode()
 
-document.getElementById("changeEndedModeIcon").addEventListener("click", toggleChangeEndedMode);
+document.getElementById("repeat").addEventListener("click", toggleChangeEndedMode);
+document.getElementById("shuffle").addEventListener("click", toggleChangeEndedMode);
+document.getElementById("repeat-1").addEventListener("click", toggleChangeEndedMode);
 
 function toggleChangeEndedMode() {
     const repeat = document.getElementById("repeat");
@@ -524,3 +536,96 @@ function toggleChangeEndedMode() {
             break;
     }
 }
+
+let isVolumeSliderShow = false;
+
+function toggleVolumeSlider() {
+    isVolumeSliderShow = !isVolumeSliderShow;
+    if (isVolumeSliderShow) {
+        document.getElementById("slider").style.height = "100px";
+        document.getElementById("slider").style.marginTop = "-110px"
+        document.getElementById("slider").style.marginBottom = "10px"
+    } else {
+        document.getElementById("slider").style.height = "0px";
+        document.getElementById("slider").style.marginTop = "0px"
+        document.getElementById("slider").style.marginBottom = "0px"
+    }
+}
+
+audio.addEventListener("volumechange", () => {
+    if (audio.volume === 0) {
+        document.getElementById("volumeIcon").setAttribute("class", "fa-solid fa-volume-xmark icon");
+    } else {
+        document.getElementById("volumeIcon").setAttribute("class", "fa-solid fa-volume-up icon")
+    }
+})
+
+document.getElementById("volumeIcon").addEventListener("click", toggleVolumeSlider);
+
+//鼠标悬浮进度条出现小圆点
+document.getElementById("slider").addEventListener("mouseover", function () {
+    document.getElementById("volume-dot").style.display = "flex";
+})
+document.getElementById("slider").addEventListener("mouseout", function () {
+    document.getElementById("volume-dot").style.display = "none";
+})
+
+//进度条行为
+const volumeSlider = document.getElementById('slider');
+const volumeProgress = document.getElementById('volume-progress');
+const volumeDot = document.getElementById('volume-dot');
+
+audio.volume = 0.5;
+let nowVolume = 0.5;//默认音量
+
+volumeProgress.style.height = `${nowVolume * 100}%`;
+volumeDot.style.bottom = `${(nowVolume * 100) - 4}%`;
+
+// 鼠标按下
+function volumeHandleMouseDown(e) {
+    isMouseDown = true;
+    updateVolumeProgress(e);
+}
+
+// 鼠标松开
+function volumeHandleMouseUp(e) {
+    isMouseDown = false;
+    updateVolumeProgress(e);
+}
+
+// 鼠标移动
+function volumeHandleMouseMove(e) {
+    if (isMouseDown) {
+        updateVolumeProgress(e);
+    }
+}
+
+function updateVolumeProgress(e) {
+    const volumeSliderRect = volumeSlider.getBoundingClientRect();
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+
+    if (
+        clickX >= volumeSliderRect.left &&
+        clickX <= volumeSliderRect.right &&
+        clickY >= volumeSliderRect.top &&
+        clickY <= volumeSliderRect.bottom
+    ) {
+        const percentage = 1 - (clickY - volumeSliderRect.top) / volumeSliderRect.height;
+        const validPercentage = Math.max(0, Math.min(1, percentage));
+
+        volumeProgress.style.height = `${validPercentage * 100}%`;
+        volumeDot.style.bottom = `${(validPercentage * 100) - 4}%`;
+
+        audio.volume = validPercentage;
+    }
+}
+
+volumeSlider.addEventListener('mousedown', volumeHandleMouseDown);
+volumeSlider.addEventListener('mouseup', volumeHandleMouseUp);
+volumeSlider.addEventListener('mousemove', volumeHandleMouseMove);
+document.addEventListener('mouseup', volumeHandleMouseUp);
+
+audio.addEventListener('loadedmetadata', function () {
+    nowVolume = audio.volume;
+});

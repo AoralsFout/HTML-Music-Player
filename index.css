@@ -1,3 +1,7 @@
+body {
+  background-image: url("https://myhkw.cn/open/img/acg");
+}
+
 .musicPlayer {
   position: fixed;
   right: 0px;
@@ -78,6 +82,9 @@
 }
 
 .list-item {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
   font-size: 14px;
   padding: 5px;
   border-bottom: 1px solid white;
@@ -175,10 +182,12 @@
 }
 
 #changeEndedModeIcon {
+  display: flex;
   position: absolute;
-  margin-left: 320px !important;
+  margin-left: 290px !important;
   margin: 5px;
   z-index: 2;
+  flex-direction: row-reverse;
 }
 
 #repeat {
@@ -200,7 +209,10 @@
 .repeat-1 {
   font-size: 10px !important;
   margin-left: -13px;
-  margin-top:4px;
+  margin-top: 4px;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
 }
 
 #shuffle {
@@ -209,6 +221,52 @@
   height: 25px;
   align-content: center;
   justify-content: center;
+}
+
+.slider {
+  display: flex;
+  position: relative;
+  margin-top: 0px;
+  height: 0px;
+  width: 20px;
+  align-content: center;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 4;
+  transition: all 0.5s;
+  margin-bottom: 0px;
+}
+
+#volume-bg {
+  display: flex;
+  position: absolute;
+  background-color: gray;
+  height: 100%;
+  width: 4px;
+  border-radius: 2px;
+}
+
+#volume-progress {
+  display: flex;
+  position: absolute;
+  height: 50%;
+  width: 4px;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+#volume-dot {
+  display: none;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  bottom: 46%;
+}
+
+#volume-control {
+  padding-right: 5px;
+  z-index: 3;
 }
 
 .icon {
