@@ -3,7 +3,7 @@
  基于html+css+javascript+php+sql
  使用了fontawesome6图标库
 
-![image](https://github.com/sc-1.gif)
+![image](https://raw.githubusercontent.com/AoralsFout/HTML-Music-Player/main/sc-1.gif)
 
  demo:https://www.aoralsfout.cn/music
 
