@@ -79,8 +79,9 @@ function loadMusicInfo(id) {
         fg = 255 - g;
         fb = 255 - b;
 
-        const fMainColor = fr + "," + fg + "," + fb;
+        const fMainColor = fr + "," + fg + "," + fb; //反色
 
+        //更新样式
         document.getElementById("cover").style.boxShadow = "0px 0px 20px 0px rgba(" + mainColor + " ,0.5)";
         document.getElementById("progress").style.backgroundColor = "rgb(" + fMainColor + ")";
         document.getElementById("dot").style.backgroundColor = "rgb(" + fMainColor + ")";
@@ -271,6 +272,7 @@ function updateProgressAndAudio(e) {
         dot.style.left = `${validPercentage * 100}%`;
 
         if (!isMouseDown) { //md不知道为啥这个判断里的代码放下面的判断不起作用
+            //这个函数设置的属性与showTextProgress()和changeProgress()冲突,所以要清空
             progress.style.removeProperty("width");
             dot.style.removeProperty("left");
             showTextProgress();
@@ -427,8 +429,7 @@ audio.addEventListener('loadstart', () => {
     lyricsBox.innerHTML = "歌曲加载中,请稍候..."
 })
 
-//音频频谱
-
+//音频频谱特效
 const canvas = document.getElementById('visualizer');
 
 const audioContext = new (window.AudioContext || window.AudioContext)();
@@ -445,7 +446,7 @@ const dataArray = new Uint8Array(bufferLength);
 const canvasCtx = canvas.getContext('2d');
 
 function draw() {
-    getMainColor("cover/" + nowPlayingMusicId + ".jpg", function (mainColor) {//获取音乐封面主色调
+    getMainColor("cover/" + nowPlayingMusicId + ".jpg", function (mainColor) {
         const str = mainColor;
         const regex = /[^,]+/g;
         const result = str.match(regex);
@@ -482,8 +483,6 @@ function getRandomMusicId(min, max) {
 }
 
 let endedMode = "loop" //播放模式 next顺序播放 random随机播放 loop单曲循环
-
-//播完自动下一首
 
 function changeMusic() {
     switch (endedMode) {
@@ -537,6 +536,8 @@ function toggleChangeEndedMode() {
     }
 }
 
+//音量控制
+
 let isVolumeSliderShow = false;
 
 function toggleVolumeSlider() {
@@ -570,7 +571,7 @@ document.getElementById("slider").addEventListener("mouseout", function () {
     document.getElementById("volume-dot").style.display = "none";
 })
 
-//进度条行为
+//行为
 const volumeSlider = document.getElementById('slider');
 const volumeProgress = document.getElementById('volume-progress');
 const volumeDot = document.getElementById('volume-dot');
@@ -579,7 +580,7 @@ audio.volume = 0.5;
 let nowVolume = 0.5;//默认音量
 
 volumeProgress.style.height = `${nowVolume * 100}%`;
-volumeDot.style.bottom = `${(nowVolume * 100) - 4}%`;
+volumeDot.style.bottom = `${(nowVolume * 100) - 4}%`;//减4让小圆点正中心在音量条结尾
 
 // 鼠标按下
 function volumeHandleMouseDown(e) {
