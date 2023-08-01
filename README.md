@@ -1,8 +1,9 @@
 # HTML-Music-Player
 
  基于html+css+javascript+php+sql
+ 使用了fontawesome6图标库
 
-<img src="sc-1.png" width="280">
+![image](https://github.com/sc-1.gif)
 
  demo:https://www.aoralsfout.cn/music
 
