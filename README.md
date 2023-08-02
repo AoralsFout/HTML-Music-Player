@@ -43,6 +43,8 @@ INSERT INTO `musics` (`id`, `title`, `address`, `cover`, `lrc`, `album`, `author
 
 封面主题色背景
 
+记忆播放曲目,已播放时长(本地缓存)
+
 ### 添加歌曲
 
 在mysql数据库里musics表里新增一条数据,包含id,歌的标题(title),作者(author),专辑(album)(专辑可以null,前端显示暂无专辑)
