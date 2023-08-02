@@ -1,7 +1,23 @@
-var nowPlayingMusicId = 0;//记录当前正在播放的音乐id
-var data;//所有音乐信息
+function creatLocalStorage() { //创建本地缓存
+    localStorage.setItem('currentTime', 0);//记录当前正在播放的音乐id
+    localStorage.setItem('nowPlayingMusicId', 0);//已播放时长
+}
+if (localStorage['currentTime'] == undefined || localStorage['nowPlayingMusicId'] == undefined) { //判断是否第一次加载网站
+    creatLocalStorage();
+}
 
+//初始化缓存变量
 const audio = document.getElementById('control');
+
+var currentTime = localStorage['currentTime'];
+var nowPlayingMusicId = localStorage['nowPlayingMusicId'];
+
+audio.addEventListener("timeupdate", () => {//保存缓存
+    localStorage.setItem('currentTime', audio.currentTime);
+    localStorage.setItem('nowPlayingMusicId', nowPlayingMusicId);
+})
+
+var data;//所有音乐信息
 
 function getMusicInfo() {//获取所有音乐信息
     const request = new XMLHttpRequest();
@@ -21,6 +37,7 @@ function getMusicInfo() {//获取所有音乐信息
             list.innerHTML = listRes;
             //加载音乐
             loadMusicInfo(nowPlayingMusicId);
+            audio.currentTime = currentTime;
             //加载频谱
             draw();
         }
@@ -101,9 +118,9 @@ function loadMusicInfo(id) {
         document.getElementById("volume-dot").style.backgroundColor = "rgb(" + fMainColor + ")";
     });
     //清空音乐信息滚动状态
-    document.getElementById("title").setAttribute("class", "");
-    document.getElementById("author").setAttribute("class", "");
-    document.getElementById("album").setAttribute("class", "");
+    document.getElementById("musicTitle").setAttribute("class", "");
+    document.getElementById("musicAuthor").setAttribute("class", "");
+    document.getElementById("musicAlbum").setAttribute("class", "");
     //清空音乐选择状态
     for (let i = 0; i < data.length; i++) {
         document.getElementById("music" + i).setAttribute("class", "list-item");
@@ -112,30 +129,30 @@ function loadMusicInfo(id) {
     document.getElementById("music" + id).setAttribute("class", "list-item playing-item");
     document.getElementById("box").style.backgroundImage = "url(" + cover + ")";
     document.getElementById("list").style.backgroundImage = "url(" + cover + ")";
-    document.getElementById("title").innerHTML = data[id].title;
+    document.getElementById("musicTitle").innerHTML = data[id].title;
     document.getElementById("cover").style.backgroundImage = "url(" + cover + ")";
-    document.getElementById("author").innerHTML = data[id].author;
+    document.getElementById("musicAuthor").innerHTML = data[id].author;
     if (data[id].album == null) {
-        document.getElementById("album").innerHTML = "暂无专辑";
+        document.getElementById("musicAlbum").innerHTML = "暂无专辑";
     } else {
-        document.getElementById("album").innerHTML = data[id].album;
+        document.getElementById("musicAlbum").innerHTML = data[id].album;
     }
     document.getElementById("audio").src = address;
     //播放音乐
     audio.load();
     audio.play();
     //添加音乐信息滚动状态
-    if (document.getElementById("title").clientWidth > 150) {
-        document.getElementById("title").setAttribute("class", "scrolling-text");
-        document.getElementById("title").innerHTML = data[id].title + "\n\n" + data[id].title;
+    if (document.getElementById("musicTitle").clientWidth > 150) {
+        document.getElementById("musicTitle").setAttribute("class", "scrolling-text");
+        document.getElementById("musicTitle").innerHTML = data[id].title + "\n\n" + data[id].title;
     }
-    if (document.getElementById("album").clientWidth > 150) {
-        document.getElementById("album").setAttribute("class", "scrolling-text");
-        document.getElementById("album").innerHTML = data[id].album + "\n\n" + data[id].album;
+    if (document.getElementById("musicAlbum").clientWidth > 150) {
+        document.getElementById("musicAlbum").setAttribute("class", "scrolling-text");
+        document.getElementById("musicAlbum").innerHTML = data[id].album + "\n\n" + data[id].album;
     }
-    if (document.getElementById("author").clientWidth > 150) {
-        document.getElementById("author").setAttribute("class", "scrolling-text");
-        document.getElementById("author").innerHTML = data[id].author + "\n\n" + data[id].author;
+    if (document.getElementById("musicAuthor").clientWidth > 150) {
+        document.getElementById("musicAuthor").setAttribute("class", "scrolling-text");
+        document.getElementById("musicAuthor").innerHTML = data[id].author + "\n\n" + data[id].author;
     }
     //加载歌词
     getLrc(nowPlayingMusicId);
@@ -357,8 +374,11 @@ var isPlayerShow = false
 
 document.getElementById("showBox").addEventListener("click", togglePlayer)
 
+document.getElementById("musicPlayer").style.right = "-350px";
+document.getElementById("showBoxIcon").style.transform = "rotate(180deg)"
+
 function togglePlayer() {
-    if (isPlayerShow) {
+    if (!isPlayerShow) {
         isPlayerShow = !isPlayerShow
         document.getElementById("musicPlayer").style.right = "-350px";
         document.getElementById("showBoxIcon").style.transform = "rotate(180deg)"
@@ -368,6 +388,13 @@ function togglePlayer() {
         document.getElementById("showBoxIcon").style.transform = "rotate(0deg)"
     }
 }
+
+togglePlayer()
+
+setTimeout(() => {
+    togglePlayer()
+}, 2000);
+//2s后自动展开播放器
 
 //歌词
 
@@ -427,6 +454,12 @@ audio.addEventListener('timeupdate', function () {
 
 audio.addEventListener('loadstart', () => {
     lyricsBox.innerHTML = "歌曲加载中,请稍候..."
+})
+
+audio.addEventListener('canplaythrough', () => {
+    if (audio.readyState === 4) {
+        lyricsBox.innerHTML = "";
+    }
 })
 
 //音频频谱特效
